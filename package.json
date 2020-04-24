@@ -1,0 +1,50 @@
+{
+	"name": "pangu-markdown-vscode",
+	"displayName": "Pangu-Markdown-VSCode",
+	"description": "customized pangu formatter for markdown",
+	"version": "0.1.2",
+	"publisher": "zhuyuanxiang",
+	"engines": {
+		"vscode": "^1.44.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/zhuyuanxiang/pangu-markdown-vscode"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:pangu-markdown-vscode.formatPangu",
+		"onCommand:pangu-markdown-vscode.formatMarkdown"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "pangu-markdown-vscode.formatPangu",
+				"title": "Pangu Format VSCode"
+			},
+			{
+				"command": "pangu-markdown-vscode.formatMarkdown",
+				"title": "Markdown Format VSCode"
+			}
+		]
+	},
+	"scripts": {
+		"lint": "eslint .",
+		"pretest": "npm run lint",
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.44.0",
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.1",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	}
+}

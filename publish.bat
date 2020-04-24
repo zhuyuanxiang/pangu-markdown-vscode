@@ -1,0 +1,2 @@
+REM Personal Access Token: 5wxpffdkmaruop23y2obxwjrvlqiqhv2wgpl2x7p5e6if25eayaa
+vsce package
