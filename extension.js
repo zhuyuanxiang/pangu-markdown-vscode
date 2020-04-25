@@ -21,11 +21,6 @@ function activate(context) {
 	});
 	context.subscriptions.push(format);
 
-	let formatMarkdown = vscode.commands.registerCommand('pangu-markdown-vscode.formatMarkdown', () => {
-		new MarkdownFormatter().updateDocument();
-	});
-	context.subscriptions.push(formatMarkdown);
-
 	context.subscriptions.push(new Watcher());
 }
 exports.activate = activate;
@@ -49,6 +44,8 @@ class PanguFormatter {
 			// 注意：全局更替使用\s时要小心，避免将回车更替了
 			vscode.window.activeTextEditor.edit((editorBuilder) => {
 				let content = doc.getText(this.current_document_range(doc));
+				// 在全文最后增加两个回车，结束文档整理前再删除最后一个回车，就可以满足Markdown的要求了
+				content = content + "\n\n";
 
 				// 替换所有的全角数字为半角数字
 				content = this.replaceFullNums(content);
@@ -66,8 +63,24 @@ class PanguFormatter {
 					// 删除多余的空格
 					line = this.deleteSpaces(line);
 
+					// 将有编号列表的“1. ”改成 “1.  ”
+					line = line.replace(/^(\s*)(\d\.)\s+(\S)/, '$1$2  $3');
+					// 将无编号列表的“* ”改成 “-   ”
+					// 将无编号列表的“- ”改成 “-   ”
+					line = line.replace(/^(\s*)[-\*]\s+(\S)/, '$1-   $2');
+					// XXX 不要修改缩进，因为自动修改缩进有可能会改变原文的意思，缩进出错只能由作者手工调整
+
+					// 再次补充空格，将被删除的但是是必须的空格补齐
+					// 在标题的 # 后面需要增加空格
+					line= line.replace(/^(#{1,})\s*(\S)/g,"$1 $2");
+
 					return line;
 				}).join("\n");
+
+				// 结束文档整理前再删除最后一个回车
+				content = content.replace(/(\n){2,}$/g, '$1');
+				content = content.replace(/(\r\n){2,}$/g, '$1');
+
 				editorBuilder.replace(this.current_document_range(doc), content);
 			});
 		} else {
@@ -85,8 +98,8 @@ class PanguFormatter {
 		// 将网络地址中“ : // ”符号改成“://”
 		content = content.replace(/\s*:\s*\/\s*\/\s*/g, "://");
 
-		// 去掉包括代码的符号左右的空格，因为代码里面不容许空格，暂时不具备分析包裹代码的能力，因此直接删除空格
-		content = content.replace(/\s*`\s*/g, '`')
+		// 去掉包裹代码的符号左右的空格，因为代码里面不容许空格，暂时不具备分析包裹代码的能力，因此直接删除空格
+		content = content.replace(/\s*`\s*/g, '`');
 
 		// 去掉行末空格
 		content = content.replace(/(\S*)\s*$/g, '$1');
@@ -129,16 +142,16 @@ class PanguFormatter {
 		return range;
 	};
 
-	// 
+	//
 	condenseContent(content) {
-		// 将 制表符 改成 两个空格
-		content = content.replace(/\t/g, "  ");
+		// 将 制表符 改成 四个空格
+		content = content.replace(/\t/g, "    ");
 
 		// 删除超过2个的回车
 		// Unix 的只有 LF，Windows 的需要 CR LF
 		content = content.replace(/(\n){3,}/g, "$1$1");
 		content = content.replace(/(\r\n){3,}/g, "$1$1");
-		// content = content.replace(/^(.*)(\r?\n\1)+$/gm, "$1");   
+		// content = content.replace(/^(.*)(\r?\n\1)+$/gm, "$1");
 		return content;
 	};
 
@@ -267,57 +280,6 @@ class PanguFormatter {
 		content = content.replace(/ｙ/g, "y");
 		content = content.replace(/ｚ/g, "z");
 		return content;
-	};
-};
-
-class MarkdownFormatter {
-	updateDocument() {
-		let editor = vscode.window.activeTextEditor;
-		let doc = editor.document;
-		// Only update status if an Markdown file
-		if (doc.languageId === "markdown") {
-			vscode.window.activeTextEditor.edit((editorBuilder) => {
-				let content = doc.getText(this.current_document_range(doc));
-				// 每行操作
-				// 在全文最后增加两个回车，结束文档整理前再删除最后一个回车，就可以满足Markdown的要求了
-				content = content + "\n\n";
-				content = content.split("\n").map((line) => {
-					line = this.indentBlock(line);
-
-					// 再次补充空格，将被删除的但是是必须的空格补齐
-					// 将有编号列表的“1.   ”改成 “1. ”
-					line = line.replace(/^(\s*)(\d\.)\s{2,}(\S)/, '$1$2 $3');
-					// 将无编号列表的“*   ”改成 “- ”
-					// 将无编号列表的“-   ”改成 “- ”
-					line = line.replace(/^(\s*)[-\*]\s+(\S)/, '$1- $2');
-		
-					// 在标题的 # 后面需要增加空格
-					line= line.replace(/^(#{1,})\s*(\S)/g,"$1 $2");
-					
-					return line;
-				}).join("\n");
-				// 结束文档整理前再删除最后一个回车
-				content = content.replace(/(\n){2,}$/g, '$1');
-				content = content.replace(/(\r\n){2,}$/g, '$1');
-				editorBuilder.replace(this.current_document_range(doc), content);
-			});
-		} else {
-			vscode.window.showErrorMessage('不能处理非 Markdown 的文件!');
-		};
-	};
-	indentBlock(content) {
-		content = content.replace(/^(\s){2,4}(\S)/, '$1$1$2');
-		content = content.replace(/^(\s){4,8}(\S)/, '$1$1$1$1$2');
-		content = content.replace(/^(\s){8,12}(\S)/, '$1$1$1$1$1$1$2');
-		content = content.replace(/^(\s){12,16}(\S)/, '$1$1$1$1$1$1$1$1$2');
-		return content;
-	};
-	// 获取可编辑文档的全部内容
-	current_document_range(doc) {
-		let start = new vscode.Position(0, 0);
-		let end = new vscode.Position(doc.lineCount - 1, doc.lineAt(doc.lineCount - 1).text.length);
-		let range = new vscode.Range(start, end);
-		return range;
 	};
 };
 
