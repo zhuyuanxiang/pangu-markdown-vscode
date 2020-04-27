@@ -10,3 +10,4 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 -   补充 Markdown 格式要求的空格
 -   取消这个功能：數字與單位之間需要增加空格（只有手工做，不能自动做，会破坏密码网址等信息）
 -   取消对缩进的处理，防止出现使用者未知的后果
+-   去掉 [^footnote,2002] 中的空格
