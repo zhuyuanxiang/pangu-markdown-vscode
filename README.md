@@ -67,6 +67,10 @@
 
 ## Release Notes
 
+### 0.1.4
+
+-   修正了数学公式中 $ () $ 中多余的空格，变成 $()$
+
 ### 0.1.3
 
 -   取消了 formatMarkdown，将功能合并到 Pangu Format VSCode

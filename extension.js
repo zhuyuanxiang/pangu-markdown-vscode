@@ -91,6 +91,9 @@ class PanguFormatter {
 	deleteSpaces(content) {
 		// 去掉()[]{}<>'": 前后多余的空格
 		content = content.replace(/\s+([\(\)\[\]\{\}<>'":])\s+/g, ' $1 ');
+		
+		// 去掉 $ () $ 里面增加的空格，主要是最后一个括号与$之间的空格
+		content = content.replace(/(\$)\s*([^\$]*)([\)\]\}])\s*(\$)/g, "$1$2$3$4");
 
 		// 将链接的格式中文括号“[]（）”改成英文括号“[]()”，去掉增加的空格
 		content = content.replace(/\s*\[\s*([^\]]+)\s*\]\s*[（(]\s*([^\s\)]*)\s*[)）]\s*/g, " [$1]($2) ");
@@ -115,7 +118,8 @@ class PanguFormatter {
 		content = content.replace(/([0-9])\s*,\s*([0-9])/g, "$1,$2");
 
 		// 全角標點與其他字符之間不加空格
-		content = content.replace(/\s*([，。、《》？『』「」；∶【】｛｝—！＠￥％…（）])\s*/g, "$1");
+		// 将无序列表的-后面的空格保留
+		content = content.replace(/(?<!-)\s*([，。、《》？『』「」；∶【】｛｝—！＠￥％…（）])\s*/g, "$1");
 		return content;
 	};
 
