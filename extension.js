@@ -89,29 +89,12 @@ class PanguFormatter {
 	};
 
 	deleteSpaces(content) {
-		// 去掉「`()[]{}<>'"`」: 前后多余的空格
+		// 去掉()[]{}<>'": 前后多余的空格
 		content = content.replace(/\s+([\(\)\[\]\{\}<>'":])\s+/g, ' $1 ');
 		
-		// 去掉连续括号增加的空格，例如：「` ( [ { <  > } ] ) `」
-		content = content.replace(/([<\(\{\[])\s([<\(\{\[])\s/g,"$1$2 ");
-		content = content.replace(/([<\(\{\[])\s([<\(\{\[])\s/g,"$1$2 ");
-		content = content.replace(/([<\(\{\[])\s([<\(\{\[])\s/g,"$1$2 ");
-		content = content.replace(/([<\(\{\[])\s([<\(\{\[])\s/g,"$1$2 ");
-		content = content.replace(/\s([>\)\]\}])\s([>\)\]\}])/g," $1$2");
-		content = content.replace(/\s([>\)\]\}])\s([>\)\]\}])/g," $1$2");
-		content = content.replace(/\s([>\)\]\}])\s([>\)\]\}])/g," $1$2");
-		content = content.replace(/\s([>\)\]\}])\s([>\)\]\}])/g," $1$2");
-		
-		// 去掉 「`$ () $`」, 「`$ [] $`」, 「`$ {} $`」 里面增加的空格
-		// 去掉开始 $ 后面增加的空格，结束 $ 前面增加的空格
-		// 去掉包裹代码的符号里面增加的空格
-		// 去掉开始 ` 后面增加的空格，结束 ` 前面增加的空格
-		content = content.replace(/([`\$])\s*([<\(\[\{])([^\$]*)\s*([`\$])/g, "$1$2$3$4");
-		content = content.replace(/([`\$])\s*([^\$]*)([>\)\]\}])\s*([`\$])/g, "$1$2$3$4");
+		// 去掉 $ () $ 里面增加的空格，主要是最后一个括号与$之间的空格
+		content = content.replace(/(\$)\s*([^\$]*)([\)\]\}])\s*(\$)/g, "$1$2$3$4");
 
-		// 去掉「`) _`」、「`) ^`」增加的空格
-		content = content.replace(/\)\s([_\^])/g,")$1");
-		
 		// 去掉 [^footnote,2002] 中的空格
 		content = content.replace(/\[\s*\^([^\]\s]*)\s*\]/g, "[^$1]");
 
@@ -120,6 +103,9 @@ class PanguFormatter {
 
 		// 将网络地址中“ : // ”符号改成“://”
 		content = content.replace(/\s*:\s*\/\s*\/\s*/g, "://");
+
+		// 去掉包裹代码的符号左右的空格，因为代码里面不容许空格，暂时不具备分析包裹代码的能力，因此直接删除空格
+		content = content.replace(/\s*`\s*/g, '`');
 
 		// 去掉行末空格
 		content = content.replace(/(\S*)\s*$/g, '$1');
@@ -150,7 +136,6 @@ class PanguFormatter {
 		content = content.replace(/([a-zA-Z0-9%])([*]*[\u4e00-\u9fa5\u3040-\u30FF])/g, "$1 $2");
 
 		// 在 「100Gbps」之间加入空格「100 Gbps」（只有手工做，不能自动做，会破坏密码网址等信息）
-		
 		// 在 「I said:it's a good news」的冒号与英文之间加入空格 「I said: it's a good news」
 		content = content.replace(/([:])\s*([a-zA-z])/g, "$1 $2");
 		return content;
@@ -173,6 +158,7 @@ class PanguFormatter {
 		// Unix 的只有 LF，Windows 的需要 CR LF
 		content = content.replace(/(\n){3,}/g, "$1$1");
 		content = content.replace(/(\r\n){3,}/g, "$1$1");
+		// content = content.replace(/^(.*)(\r?\n\1)+$/gm, "$1");
 		return content;
 	};
 
@@ -215,10 +201,10 @@ class PanguFormatter {
 		content = content.replace(/(\w)\s*－\s*(\w)/g, "$1 - $2");
 		content = content.replace(/(\w)\s*＝\s*(\w)/g, "$1 = $2");
 		content = content.replace(/(\w)\s*＋\s*(\w)/g, "$1 + $2");
-		content = content.replace(/(\w)\s*｛\s*(\w)/g, "$1 {$2");
-		content = content.replace(/(\w)\s*｝\s*(\w)/g, "$1} $2");
-		content = content.replace(/(\w)\s*[【\[]\s*(\w)/g, "$1 [$2");
-		content = content.replace(/(\w)\s*[】\]]\s*(\w)/g, "$1] $2");
+		content = content.replace(/(\w)\s*｛\s*(\w)/g, "$1 { $2");
+		content = content.replace(/(\w)\s*｝\s*(\w)/g, "$1 } $2");
+		content = content.replace(/(\w)\s*[【\[]\s*(\w)/g, "$1 [ $2");
+		content = content.replace(/(\w)\s*[】\]]\s*(\w)/g, "$1 ] $2");
 		content = content.replace(/(\w)\s*｜\s*(\w)/g, "$1 | $2");
 		content = content.replace(/(\w)\s*＼\s*(\w)/g, "$1 \ $2");
 		content = content.replace(/(\w)\s*～\s*(\w)/g, "$1~$2");
