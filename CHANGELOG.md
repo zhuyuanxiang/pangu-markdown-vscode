@@ -4,7 +4,22 @@
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [TODO]
+
 ## [Unreleased]
+
+### 2020-05-17
+
+-   避免图片显示代码增加空格
+    -   例如：`![]`会被错误处理成`！ []`
+-   保留有序列表与中文符号之间的空格
+    -   例如：`1.   「测试」` 会被错误处理成 `1.「测试」`
+-   保留无序列表与中文符号之间的空格
+    -   例如：`-   「测试」` 会被错误处理成 `-「测试」`
+
+## [Released]
+
+### 2020-05-16
 
 -   补充 Markdown 格式要求的空格
 -   取消这个功能：數字與單位之間需要增加空格（只有手工做，不能自动做，会破坏密码网址等信息）
