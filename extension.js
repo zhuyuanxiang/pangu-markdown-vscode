@@ -58,10 +58,10 @@ class PanguFormatter {
 				content = content.split("\n").map((line) => {
 					// 中文内部使用全角标点
 					line = this.replacePunctuations(line);
-					// 插入必要的空格
-					line = this.insertSpace(line);
 					// 删除多余的空格
 					line = this.deleteSpaces(line);
+					// 插入必要的空格
+					line = this.insertSpace(line);
 
 					// 将有编号列表的“1. ”改成 “1.  ”
 					line = line.replace(/^(\s*)(\d\.)\s+(\S)/, '$1$2  $3');
@@ -147,11 +147,11 @@ class PanguFormatter {
 	insertSpace(content) {
 		// 在 “中文English” 之间加入空格 “中文 English”
 		// 在 “中文123” 之间加入空格 “中文 123”
-		content = content.replace(/([\u4e00-\u9fa5\u3040-\u30FF])([a-zA-Z0-9])/g, '$1 $2');
+		content = content.replace(/([\u4e00-\u9fa5\u3040-\u30FF])([a-zA-Z0-9`])/g, '$1 $2');
 
 		// 在 “English中文” 之间加入空格 “English 中文”
 		// 在 “123中文” 之间加入空格 “123 中文”
-		content = content.replace(/([a-zA-Z0-9%])([*]*[\u4e00-\u9fa5\u3040-\u30FF])/g, "$1 $2");
+		content = content.replace(/([a-zA-Z0-9%`])([*]*[\u4e00-\u9fa5\u3040-\u30FF])/g, "$1 $2");
 
 		// 在 「100Gbps」之间加入空格「100 Gbps」（只有手工做，不能自动做，会破坏密码网址等信息）
 		

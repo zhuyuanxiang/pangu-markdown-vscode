@@ -8,6 +8,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [Released]
+
+### 2020-08-14
+
+-   增加了对中文夹代码块两边插入空格的支持
+    -   例1：短代码支持`filename`测试 → 短代码支持 `filename` 测试
+    -   例2：短代码中包含中文`中国`的测试 → 短代码中包含中文 ` 中国 ` 的测试
+        -   短代码块直接包含中文就会增加空格，这个问题没有处理，因为需要用到解析数据，暂时未支持
+-   调整了代码空格处理顺序
+    -   先处理删除空格，再处理增加空格，可能会出现多空格的问题，请大家帮助查询问题，谢谢。
+
 ### 2020-05-17
 
 -   避免图片显示代码增加空格
@@ -16,8 +27,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
     -   例如：`1.   「测试」` 会被错误处理成 `1.「测试」`
 -   保留无序列表与中文符号之间的空格
     -   例如：`-   「测试」` 会被错误处理成 `-「测试」`
-
-## [Released]
 
 ### 2020-05-16
 
