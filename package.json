@@ -2,7 +2,7 @@
 	"name": "pangu-markdown-vscode",
 	"displayName": "Pangu-Markdown-VSCode",
 	"description": "customized pangu formatter for markdown",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"publisher": "zhuyuanxiang",
 	"engines": {
 		"vscode": "^1.44.0"
